@@ -4,16 +4,16 @@
 
 **Enterprise Agent Control Plane (EACP)**
 
-EACP is a vendor-agnostic control plane that sits on top of LangGraph, CrewAI, and AutoGen and adds centralized policy enforcement (rate limits, cost budgets, tool restrictions, compliance tags), a unified workflow abstraction across all three frameworks, observability (tracing/metrics/run history), and human-in-the-loop approval gates. It's aimed at platform teams who run agents from multiple frameworks in production and need one governance layer instead of three. The full target spec is captured verbatim in `prompt,md` at the repo root.
+EACP is a vendor-agnostic control plane that sits on top of LangGraph, CrewAI, and AutoGen and adds centralized policy enforcement (rate limits, cost budgets, tool restrictions, compliance tags), a unified workflow abstraction across all three frameworks, observability (tracing/metrics/run history), and human-in-the-loop approval gates. It's aimed at platform teams who run agents from multiple frameworks in production and need one governance layer instead of three. The full target spec is captured verbatim in `prompt.md` at the repo root.
 
 **Core Value:** A single policy definition can govern a workflow regardless of which framework (LangGraph, CrewAI, or AutoGen) executes it — enforced for real, not just documented.
 
 ### Constraints
 
-- **Language**: Python 3.11+ with type hints — explicit in prompt,md's code style section
+- **Language**: Python 3.11+ with type hints — explicit in prompt.md's code style section
 - **Dependencies**: Must add real `langgraph`, `crewai`, and an AutoGen package as dependencies since adapters need to be real, not stubbed — pick current stable packages during Phase research, pin versions
 - **Runnability without paid keys**: Demos must not hard-require a paid LLM API key to prove the control-plane logic works — support a local/mock model path so reviewers and CI can run examples
-- **Persistence**: Run history store must be simple and pluggable (SQLite for v1) — explicit in prompt,md
+- **Persistence**: Run history store must be simple and pluggable (SQLite for v1) — explicit in prompt.md
 - **Scope discipline**: Ship the reference architecture + 3 working examples + benchmarks + docs; do not build hosted infra, multi-tenant auth, or a web UI — explicit Out of Scope above
 
 <!-- GSD:project-end -->

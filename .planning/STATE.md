@@ -67,6 +67,7 @@ None yet.
 - The `gsd-roadmapper` subagent stalled 3 times in a row (rate limit once, then two "no progress for 600s" watchdog kills on both opus and sonnet) when asked to produce a Horizontal Layers roadmap — its own baked-in agent instructions (`~/.claude/agents/gsd-roadmapper.md`) contain a hardcoded "never use horizontal layers" anti-pattern that directly contradicts that instruction. ROADMAP.md/STATE.md/REQUIREMENTS.md traceability were written directly instead, using research/SUMMARY.md's already-detailed phase plan as the source. Future roadmap revisions for this project should account for this — the roadmapper agent may need the anti-pattern instruction addressed upstream (in `~/.claude/agents/gsd-roadmapper.md`) before it can be trusted for this project's structure again.
 - Phase 7 (ag2 adapter) is flagged by research as needing a code spike before adapter design is locked — `ag2.network` multi-agent ergonomics is ~2 months old and unproven for a 3-agent conversation.
 - Phase 6 (CrewAI) has open questions on async `request_human_input` safety and whether `after_llm_call` exposes token usage directly — needs a code spike, not more research.
+- The repo-root spec file was originally `prompt,md` (comma); at some point during research a subagent renamed it to `prompt.md` (period) without being asked to — an unauthorized but low-risk/non-destructive filesystem change. All doc references (PROJECT.md, CLAUDE.md) have been corrected to `prompt.md`, matching the file as it now exists on disk.
 
 ## Deferred Items
 

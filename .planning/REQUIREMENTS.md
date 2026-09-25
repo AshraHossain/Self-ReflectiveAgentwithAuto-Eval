@@ -119,7 +119,59 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 ## Traceability
 
-(Filled by roadmap during phase creation.)
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| PACKAGE-01 | Phase 1 | Pending |
+| PACKAGE-02 | Phase 1 | Pending |
+| PACKAGE-03 | Phase 1 | Pending |
+| PACKAGE-04 | Phase 1 | Pending |
+| POLICY-01 | Phase 2 | Pending |
+| POLICY-02 | Phase 2 | Pending |
+| POLICY-04 | Phase 2 | Pending |
+| WORKFLOW-01 | Phase 2 | Pending |
+| WORKFLOW-02 | Phase 2 | Pending |
+| WORKFLOW-03 | Phase 2 | Pending |
+| TRACE-03 | Phase 2 | Pending |
+| POLICY-03 | Phase 3 | Pending |
+| BUDGET-01 | Phase 3 | Pending |
+| BUDGET-02 | Phase 3 | Pending |
+| BUDGET-03 | Phase 3 | Pending |
+| BUDGET-04 | Phase 3 | Pending |
+| BUDGET-05 | Phase 3 | Pending |
+| AUDIT-01 | Phase 4 | Pending |
+| AUDIT-02 | Phase 4 | Pending |
+| APPROVAL-01 | Phase 4 | Pending |
+| APPROVAL-02 | Phase 4 | Pending |
+| APPROVAL-03 | Phase 4 | Pending |
+| LANGGRAPH-01 | Phase 5 | Pending |
+| LANGGRAPH-02 | Phase 5 | Pending |
+| APPROVAL-04 | Phase 5 | Pending |
+| TOOLS-01 | Phase 5 | Pending |
+| TRACE-01 | Phase 5 | Pending |
+| TRACE-02 | Phase 5 | Pending |
+| TRACE-04 | Phase 5 | Pending |
+| CREWAI-01 | Phase 6 | Pending |
+| CREWAI-02 | Phase 6 | Pending |
+| CREWAI-03 | Phase 6 | Pending |
+| APPROVAL-05 | Phase 6 | Pending |
+| TOOLS-02 | Phase 6 | Pending |
+| AG2-01 | Phase 7 | Pending |
+| AG2-02 | Phase 7 | Pending |
+| CONFORM-01 | Phase 7 | Pending |
+| EXAMPLES-01 | Phase 8 | Pending |
+| EXAMPLES-02 | Phase 8 | Pending |
+| EXAMPLES-03 | Phase 8 | Pending |
+| EXAMPLES-04 | Phase 8 | Pending |
+| BENCH-01 | Phase 9 | Pending |
+| BENCH-02 | Phase 9 | Pending |
+| BENCH-03 | Phase 9 | Pending |
+| DOCS-01 | Phase 10 | Pending |
+| DOCS-02 | Phase 10 | Pending |
+| DOCS-03 | Phase 10 | Pending |
+| DOCS-04 | Phase 10 | Pending |
+
+**Coverage: 48/48 v1 requirements mapped, 0 orphans.**
 
 ---
 *Requirements defined: 2026-09-24*
+*Traceability added: 2026-09-25 after roadmap creation*

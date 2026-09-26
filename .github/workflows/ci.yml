@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.12.19"
+
+jobs:
+  # ── The gate. Proves PACKAGE-01 + PACKAGE-03 on every push. ──────────────
+  core:
+    name: core (no frameworks) / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Lockfile is in sync with pyproject.toml   # PACKAGE-03
+        run: uv lock --check
+
+      - name: Install core only (no extras, no dev group)
+        run: uv sync --locked --no-default-groups
+
+      - name: import eacp with zero agent frameworks    # PACKAGE-01
+        run: |
+          uv run --no-sync --no-default-groups python - <<'PY'
+          import importlib.util as u
+          import eacp
+
+          FRAMEWORKS = ("langgraph", "crewai", "ag2", "langchain_core")
+          installed = [m for m in FRAMEWORKS if u.find_spec(m) is not None]
+          assert not installed, (
+              f"PACKAGE-01 VIOLATED: agent framework(s) reached the core "
+              f"install: {installed}. A framework was added to "
+              f"[project].dependencies, or an extra leaked into it."
+          )
+          print(f"PACKAGE-01 OK - eacp {eacp.__version__}, no frameworks present")
+          PY
+
+      - name: Core test suite
+        run: uv sync --locked && uv run pytest -q
+
+  # ── One job per extra (D-04) × Linux + macOS arm64 (D-05). ──────────────
+  extra:
+    name: ${{ matrix.extra }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        extra: [langgraph, crewai, ag2]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      # Defensive: `macos-latest` is arm64 TODAY, but the label floats. If
+      # GitHub ever repoints it at Intel, fail with OUR message rather than an
+      # opaque lancedb wheel error. See README platform matrix / PACKAGE-04.
+      - name: Guard against an Intel macOS runner
+        if: runner.os == 'macOS'
+        run: |
+          arch="$(uname -m)"
+          echo "macOS runner arch: $arch"
+          if [ "$arch" != "arm64" ]; then
+            echo "::error::macos-latest resolved to $arch, not arm64. The crewai" \
+                 "extra cannot install on macOS x86_64 (lancedb publishes no" \
+                 "x86_64 wheel and no sdist). Pin an explicit arm64 runner label."
+            exit 1
+          fi
+
+      - name: Install eacp[${{ matrix.extra }}]
+        run: uv sync --locked --no-default-groups --extra ${{ matrix.extra }}
+
+      - name: Import the adapter through the lazy loader   # PACKAGE-02
+        run: |
+          uv run --no-sync --no-default-groups python - <<'PY'
+          import os, sys
+          import eacp
+          from eacp.backends import load_backend_module
+
+          # `import eacp` must not have pulled the framework in by itself.
+          leaked = sorted(
+              m for m in sys.modules
+              if m.split(".")[0] in {"langgraph", "crewai", "ag2"}
+          )
+          assert not leaked, f"PACKAGE-02 VIOLATED: eager framework import: {leaked}"
+
+          backend = os.environ["EACP_EXTRA"]
+          module = load_backend_module(backend)
+          print(f"PACKAGE-02 OK - {backend} -> {module.__name__} "
+                f"(framework {module.FRAMEWORK_VERSION})")
+          PY
+        env:
+          EACP_EXTRA: ${{ matrix.extra }}

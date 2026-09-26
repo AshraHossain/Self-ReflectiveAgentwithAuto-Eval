@@ -23,7 +23,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v10
+      # astral-sh publishes no floating major tag past v7 -- `@v10` is
+      # unresolvable. Pin the exact release (verified: latest is v10.2.0).
+      - uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -64,7 +66,7 @@ jobs:
         extra: [langgraph, crewai, ag2]
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0   # see note in the `core` job
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true

@@ -11,7 +11,7 @@ EACP is built bottom-up: a stable, framework-free foundation (schema, policy eng
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Stack Decision, Scaffold & Packaging** - Installable core with zero framework lock-in and pinned, reproducible extras
+- [x] **Phase 1: Stack Decision, Scaffold & Packaging** - Installable core with zero framework lock-in and pinned, reproducible extras (completed 2026-09-26)
 - [ ] **Phase 2: Core Schema, Registry & Stores** - Policies and workflows are declared, validated, and stored consistently
 - [ ] **Phase 3: Policy Engine, Budget Ledger & Mock LLM** - Enforcement logic proven correct with zero frameworks installed
 - [ ] **Phase 4: Approval Service, Audit Log & CLI** - Human-in-the-loop gate and compliance audit trail, framework-independent
@@ -48,7 +48,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03-PLAN.md — GitHub Actions 8-cell core + extras matrix gate, confirmed green (wave 3)
+- [x] 01-03-PLAN.md — GitHub Actions 8-cell core + extras matrix gate, confirmed green (wave 3)
 
 ### Phase 2: Core Schema, Registry & Stores
 
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stack Decision, Scaffold & Packaging | 2/3 | In Progress|  |
+| 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
 | 2. Core Schema, Registry & Stores | 0/TBD | Not started | - |
 | 3. Policy Engine, Budget Ledger & Mock LLM | 0/TBD | Not started | - |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |

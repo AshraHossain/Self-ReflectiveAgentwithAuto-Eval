@@ -101,6 +101,8 @@ No source file, test, `pyproject.toml` entry, or lockfile line changed. `uv lock
 
 Superseded red run (kept for the record): [36265874041](https://github.com/AshraHossain/Self-ReflectiveAgentwithAuto-Eval/actions/runs/36265874041) — head SHA `6582450`, all 8 cells failed in 3-4 s at action resolution. See Deviations.
 
+**Second independent green run:** [36266834169](https://github.com/AshraHossain/Self-ReflectiveAgentwithAuto-Eval/actions/runs/36266834169) — head SHA `48b1511` (this plan's metadata commit), 8/8 `success`, 0 failures. The gate is reproducibly green, not green once. It also confirms the workflow has no path filter, so `.planning/` doc commits run the full matrix; that is deliberate (the plan's success criterion is *every* push to `main`), and a `paths-ignore` was not added because it would let a `pyproject.toml`-adjacent change slip past on a mixed commit.
+
 ### 8-cell pass/fail grid with wall time
 
 | Cell | OS | Result | Wall time | Packages installed | Evidence line |

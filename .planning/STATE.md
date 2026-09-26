@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-09-26T06:20:39.882Z"
-last_activity: 2026-09-26 -- Phase 1 execution started
+stopped_at: Completed 01-01-PLAN.md (Phase 1, plan 1 of 3)
+last_updated: "2026-09-26T18:31:59.422Z"
+last_activity: 2026-09-26 -- Completed plan 01-01 (manifest, README platform matrix, package skeleton, committed uv.lock)
 progress:
   total_phases: 10
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-09-24)
 ## Current Position
 
 Phase: 1 (Stack Decision, Scaffold & Packaging) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 1
-Last activity: 2026-09-26 -- Phase 1 execution started
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-09-26 -- Completed plan 01-01 (manifest, README platform matrix, package skeleton, committed uv.lock)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -36,19 +36,19 @@ Progress: [░░░░░░░░░░] 0%
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: 14min
+- Total execution time: 14min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 01 P01 | 1 | 14min (3 tasks, 9 files) | 14min |
 
 **Recent Trend:**
 
-- Last 5 plans: —
+- Last 5 plans: 14min
 - Trend: —
 
 *Updated after each plan completion*
@@ -64,6 +64,9 @@ Recent decisions affecting current work:
 - Init: Horizontal-layers roadmap structure chosen over vertical MVP slices — matches research's real dependency order (approval gate must exist before any adapter; adapters built one at a time, not in parallel)
 - Init: Cross-adapter conformance suite added to v1 scope (Phase 7); dry-run/shadow mode, per-tenant policy scoping, and the control-plane-overhead benchmark reframe deferred to v2
 - Init: Uniform durable pause/resume across all three frameworks is architecturally impossible (LangGraph=durable, ag2=snapshot, CrewAI=blocking) — resolved via a declared `AdapterCapabilities` matrix that fails loudly at registration rather than faking parity
+- [Phase 1]: 01-01: Omitted the `local` extra from pyproject.toml (01-RESEARCH.md Q2) — it pins langchain-ollama and ag2[ollama] that nothing uses yet; it ships with the phase that builds Ollama support
+- [Phase 1]: 01-01: Upgraded the pip-installed uv 0.9.30 in place to 0.12.19 to match the CI UV_VERSION pin — a standalone 0.12.19 existed at ~/.local/bin but PATH put the stale pip copy first, so bare `uv` would have written a lockfile with the wrong revision format
+- [Phase 1]: 01-01: pyproject.toml, README.md and src/eacp/__init__.py are kept literally free of the tokens `autogen`, `import langgraph` and `from eacp.adapters` so the anti-regression greps stay true gates instead of waived checks
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-09-25T22:44:23.404Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-stack-decision-scaffold-packaging/01-CONTEXT.md
+Last session: 2026-09-26T18:28:50.036Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: .planning/phases/01-stack-decision-scaffold-packaging/01-02-PLAN.md

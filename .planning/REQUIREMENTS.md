@@ -6,10 +6,10 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 ### PACKAGE — Packaging & Distribution
 
-- [ ] **PACKAGE-01**: `pip install eacp && python -c "import eacp"` succeeds with zero agent frameworks installed (core has no LangGraph/CrewAI/ag2 dependency)
+- [x] **PACKAGE-01**: `pip install eacp && python -c "import eacp"` succeeds with zero agent frameworks installed (core has no LangGraph/CrewAI/ag2 dependency)
 - [ ] **PACKAGE-02**: Each framework adapter is installable as an optional extra (`eacp[langgraph]`, `eacp[crewai]`, `eacp[ag2]`) with lazy imports inside the adapter module
-- [ ] **PACKAGE-03**: A committed lockfile pins the full dependency graph for reproducible installs
-- [ ] **PACKAGE-04**: README documents the platform matrix, including the known macOS x86_64 / CrewAI (`lancedb`) install failure
+- [x] **PACKAGE-03**: A committed lockfile pins the full dependency graph for reproducible installs
+- [x] **PACKAGE-04**: README documents the platform matrix, including the known macOS x86_64 / CrewAI (`lancedb`) install failure
 
 ### POLICY — Policy Schema & Engine
 
@@ -121,10 +121,10 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PACKAGE-01 | Phase 1 | Pending |
+| PACKAGE-01 | Phase 1 | Complete |
 | PACKAGE-02 | Phase 1 | Pending |
-| PACKAGE-03 | Phase 1 | Pending |
-| PACKAGE-04 | Phase 1 | Pending |
+| PACKAGE-03 | Phase 1 | Complete |
+| PACKAGE-04 | Phase 1 | Complete |
 | POLICY-01 | Phase 2 | Pending |
 | POLICY-02 | Phase 2 | Pending |
 | POLICY-04 | Phase 2 | Pending |

@@ -9,7 +9,17 @@ Placeholder: real adapter logic lands in Phase 7 (AG2-01, AG2-02).
 
 from __future__ import annotations
 
+import importlib.metadata
+
 import ag2  # noqa: F401  proves the extra resolved; lazy via eacp.backends
 
 BACKEND = "ag2"
-FRAMEWORK_VERSION = getattr(ag2, "__version__", "unknown")
+
+# Distribution metadata first, so all three adapters report a version the same
+# way. PackageNotFoundError subclasses ModuleNotFoundError, so it must be
+# caught here — leaking it would let eacp.backends misreport an installed
+# framework as a missing extra.
+try:
+    FRAMEWORK_VERSION = importlib.metadata.version("ag2")
+except importlib.metadata.PackageNotFoundError:
+    FRAMEWORK_VERSION = getattr(ag2, "__version__", "unknown")

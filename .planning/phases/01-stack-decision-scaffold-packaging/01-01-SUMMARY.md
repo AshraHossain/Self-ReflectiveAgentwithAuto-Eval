@@ -86,7 +86,7 @@ completed: 2026-09-26
 2. **Task 2: Write the README platform matrix (PACKAGE-04)** — `0f2055d` (docs)
 3. **Task 3: Create the framework-free package skeleton and generate the lockfile** — `432dcd5` (feat)
 
-**Plan metadata:** `856b31d` (docs: complete plan)
+**Plan metadata:** `17dfa6e` (docs: complete plan)
 
 ## Files Created/Modified
 

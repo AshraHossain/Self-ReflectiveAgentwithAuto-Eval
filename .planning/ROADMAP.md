@@ -81,6 +81,7 @@ EACP is built bottom-up: a stable, framework-free foundation (schema, policy eng
 ### Phase 6: CrewAI Adapter
 **Goal**: A real CrewAI crew runs under the same policy/budget/approval enforcement as LangGraph, proving the control plane isn't LangGraph-shaped.
 **Depends on**: Phase 5
+**Prerequisite**: A Docker/colima Linux container for local dev — this development machine is a genuine Intel Mac (x86_64) and CrewAI's `lancedb` dependency has no macOS x86_64 wheel or sdist at any version (verified 0.29.0–0.39.0), so CrewAI cannot be installed or run directly on this host. Set up the container before starting this phase, not mid-phase. See `.planning/STATE.md` Blockers/Concerns.
 **Requirements**: CREWAI-01, CREWAI-02, CREWAI-03, APPROVAL-05, TOOLS-02
 **Success Criteria** (what must be TRUE):
   1. A CrewAI crew with a forbidden tool assigned to one role has that tool call blocked via `before_tool_call`, including when delegated to another agent

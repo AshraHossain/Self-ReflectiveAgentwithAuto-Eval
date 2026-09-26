@@ -32,7 +32,12 @@ EACP is built bottom-up: a stable, framework-free foundation (schema, policy eng
   2. `pip install eacp[langgraph]` / `eacp[crewai]` / `eacp[ag2]` each install cleanly as isolated extras with lazy imports
   3. A committed lockfile reproduces the same dependency set on a fresh install
   4. README states the macOS x86_64 / CrewAI(`lancedb`) install limitation before a user hits it
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Manifest, README platform matrix, framework-free package skeleton, committed `uv.lock` (wave 1)
+- [ ] 01-02-PLAN.md — Lazy backend loader, three placeholder adapters, packaging test suite (wave 2)
+- [ ] 01-03-PLAN.md — GitHub Actions 8-cell core + extras matrix gate, confirmed green (wave 3)
 
 ### Phase 2: Core Schema, Registry & Stores
 **Goal**: Policies and workflows are declared, validated, and stored the same way regardless of which framework will eventually run them.
@@ -138,7 +143,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stack Decision, Scaffold & Packaging | 0/TBD | Not started | - |
+| 1. Stack Decision, Scaffold & Packaging | 0/3 | Planned | - |
 | 2. Core Schema, Registry & Stores | 0/TBD | Not started | - |
 | 3. Policy Engine, Budget Ledger & Mock LLM | 0/TBD | Not started | - |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |

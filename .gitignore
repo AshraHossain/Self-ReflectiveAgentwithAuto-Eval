@@ -6,3 +6,6 @@ __pycache__/
 .mypy_cache/
 dist/
 build/
+
+# Personal working notes (Q&A / learning log) -- not part of the deliverable
+notes.md

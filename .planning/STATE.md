@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 01-03-PLAN.md -- Phase 1 execution COMPLETE (3/3 plans), ready for /gsd-verify-work
-last_updated: "2026-09-26T19:38:44.984Z"
-last_activity: 2026-09-26 -- Completed plan 01-03 (CI matrix; 8/8 cells green on run 36265951482; Phase 1 execution complete, ready for /gsd-verify-work)
+status: phase_1_verified
+stopped_at: Phase 1 UAT (7/7 pass) and security verification (16 threats, 0 open) both COMPLETE -- ready for /gsd-plan-phase 2
+last_updated: "2026-09-26T21:30:00.000Z"
+last_activity: 2026-09-26 -- Phase 1 verified end to end: 01-UAT.md 7/7 passed 0 issues, 01-SECURITY.md threats_open 0 (14 mitigated + 2 accepted, 40 assertions 0 failures). Outstanding end-of-phase human check SATISFIED programmatically via gh run view.
 progress:
   total_phases: 10
   completed_phases: 1
@@ -25,17 +25,23 @@ See: .planning/PROJECT.md (updated 2026-09-24)
 
 ## Current Position
 
-Phase: 1 (Stack Decision, Scaffold & Packaging) — EXECUTION COMPLETE (3/3 plans)
+Phase: 1 (Stack Decision, Scaffold & Packaging) — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
 Plan: 3 of 3
-Status: Phase complete — ready for `/gsd-verify-work`
-Last activity: 2026-09-26 -- Completed plan 01-03 (.github/workflows/ci.yml; 8/8 matrix cells green on run 36265951482; eacp[crewai] installed and lazy-loaded on ubuntu-latest and macos-latest for the first time, confirming 01-RESEARCH.md assumption A2)
+Status: Phase 1 fully verified — ready for `/gsd-plan-phase 2`
+Last activity: 2026-09-26 -- Ran /gsd-verify-work 1 then /gsd-secure-phase 1. Both clean.
 
 Progress: [█░░░░░░░░░] 10%
 
-**Outstanding end-of-phase human check** (`workflow.human_verify_mode: end-of-phase`): open
-https://github.com/AshraHossain/Self-ReflectiveAgentwithAuto-Eval/actions/runs/36265951482
-and confirm the 8-cell grid is green — in particular `crewai / ubuntu-latest` and
-`crewai / macos-latest`, the only evidence for README's non-Intel CrewAI platform rows.
+**Outstanding end-of-phase human check: SATISFIED** (`workflow.human_verify_mode: end-of-phase`).
+Run 36265951482 was verified programmatically rather than visually — `gh run view --json`
+reports `conclusion: success`, 8 jobs, 0 non-success, and `--log` confirms both crewai
+cells installed 137 packages at `FRAMEWORK_VERSION 1.15.22` (ubuntu-latest and
+macos-latest, the latter after `macOS runner arch: arm64`). Evidence in `01-UAT.md`.
+
+**Phase 1 verification artifacts:**
+- `01-UAT.md` — 7 tests, 7 passed, 0 issues, 0 gaps. All executed, none self-reported.
+- `01-SECURITY.md` — 16 threats (14 mitigated + 2 accepted at ASVS L1), `threats_open: 0`,
+  40 assertions against real files, 0 failures.
 
 ## Performance Metrics
 
@@ -80,6 +86,8 @@ Recent decisions affecting current work:
 - [Phase 1]: 01-03: Pinned astral-sh/setup-uv to the exact release v10.2.0 rather than a floating @v10 major tag -- astral-sh publishes no bare major tag past v7, so @v10 is unresolvable and failed all 8 matrix cells at action-resolution time; the exact pin also narrows T-01-03's mutable-tag surface from a major to a patch tag
 - [Phase 1]: 01-03: Switched origin from HTTPS to SSH -- GitHub refuses any OAuth-App push that creates or updates a workflow file without the 'workflow' scope, and gh's token has only repo/read:org/gist/admin:public_key; SSH was already authenticated and is gh's own configured git protocol, so this is the lower-privilege root-cause fix rather than 'gh auth refresh -s workflow'
 - [Phase 1]: 01-03: Kept all four macOS CI cells despite D-05 making them optional -- the repo is PUBLIC so Actions minutes are free, and crewai/macos-latest is the only environment in the entire project where CrewAI runs on Apple Silicon (the dev host is an Intel Mac that can never install it)
+- [Phase 1]: verify: Phase 1 security verification was done by direct scripted code inspection rather than by spawning gsd-security-auditor -- the register is 16 small, fully greppable/AST-checkable assertions against 5 committed files, so verifying them directly produced real evidence at lower cost than briefing a subagent to report on the same files
+- [Phase 1]: verify: **Threat IDs must be allocated from a single phase-wide sequence, not per-plan.** 01-01/01-02/01-03 independently reused `T-01-03` (hatchling build backend vs mutable action tags) and `T-01-04` (author-metadata disclosure vs the import allowlist) for different threats. Verifying such an ID against one plan leaves the other unverified while appearing covered; they are split `a`/`b` in 01-SECURITY.md
 
 ### Pending Todos
 

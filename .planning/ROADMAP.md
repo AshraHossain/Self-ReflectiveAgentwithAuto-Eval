@@ -62,7 +62,16 @@ Plans:
   3. A workflow entrypoint not on the allowlist is rejected at registration time, not at run time
   4. Run history can be written to and read back from the SQLite store via its `Protocol` interface with zero framework code imported
 
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+**Wave 1** *(the two halves share nothing — run them in parallel)*
+
+- [ ] 02-01-PLAN.md — Exception types, capability vocabulary, hardened YAML loader, strict `Policy` schema, canonical content hash (wave 1)
+- [ ] 02-02-PLAN.md — Test/type-check gates, `RunStore` Protocol, `SQLiteRunStore` with query hardening and file permissions (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-03-PLAN.md — Per-adapter `CAPABILITIES`, entrypoint allowlist, `Workflow` schema, WORKFLOW-03 capability gate (wave 2)
 
 ### Phase 3: Policy Engine, Budget Ledger & Mock LLM
 

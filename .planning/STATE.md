@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_2_context_ready
-stopped_at: Phase 2 CONTEXT.md captured (D-06 sync RunStore, D-07 per-adapter CAPABILITIES) -- ready for /gsd-plan-phase 2
+status: phase_2_planned
+stopped_at: Phase 2 planned and reviewed -- 3 plans, 9 tasks, 2 waves, 17 threat rows. Ready for /gsd-execute-phase 2
 last_updated: "2026-09-27T00:00:00.000Z"
-last_activity: 2026-09-27 -- Ran /gsd-discuss-phase 2; captured 02-CONTEXT.md. Prior: 2026-09-26 Phase 1 verified end to end: 01-UAT.md 7/7 passed 0 issues, 01-SECURITY.md threats_open 0 (14 mitigated + 2 accepted, 40 assertions 0 failures). Outstanding end-of-phase human check SATISFIED programmatically via gh run view.
+last_activity: 2026-09-27 -- Planned Phase 2: research (1185 lines, claims executed not recalled), 3 PLANs, plan-checker found 2 blockers + 5 warnings, planner revised all 9, both blockers independently re-verified. Prior: captured 02-CONTEXT.md. Prior: 2026-09-26 Phase 1 verified end to end: 01-UAT.md 7/7 passed 0 issues, 01-SECURITY.md threats_open 0 (14 mitigated + 2 accepted, 40 assertions 0 failures). Outstanding end-of-phase human check SATISFIED programmatically via gh run view.
 progress:
   total_phases: 10
   completed_phases: 1
@@ -25,9 +25,10 @@ See: .planning/PROJECT.md (updated 2026-09-24)
 
 ## Current Position
 
-Phase: 1 (Stack Decision, Scaffold & Packaging) — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
+Phase: 2 (Core Schema, Registry & Stores) — PLANNED (3 plans, 9 tasks, 2 waves)
+Prior: Phase 1 — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
 Plan: 3 of 3
-Status: Phase 1 verified; Phase 2 context captured — ready for `/gsd-plan-phase 2`
+Status: Phase 1 verified; Phase 2 planned and reviewed — ready for `/gsd-execute-phase 2`
 Last activity: 2026-09-26 -- Ran /gsd-verify-work 1 then /gsd-secure-phase 1. Both clean.
 
 Progress: [█░░░░░░░░░] 10%

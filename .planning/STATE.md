@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_1_verified
-stopped_at: Phase 1 UAT (7/7 pass) and security verification (16 threats, 0 open) both COMPLETE -- ready for /gsd-plan-phase 2
-last_updated: "2026-09-26T21:30:00.000Z"
-last_activity: 2026-09-26 -- Phase 1 verified end to end: 01-UAT.md 7/7 passed 0 issues, 01-SECURITY.md threats_open 0 (14 mitigated + 2 accepted, 40 assertions 0 failures). Outstanding end-of-phase human check SATISFIED programmatically via gh run view.
+status: phase_2_context_ready
+stopped_at: Phase 2 CONTEXT.md captured (D-06 sync RunStore, D-07 per-adapter CAPABILITIES) -- ready for /gsd-plan-phase 2
+last_updated: "2026-09-27T00:00:00.000Z"
+last_activity: 2026-09-27 -- Ran /gsd-discuss-phase 2; captured 02-CONTEXT.md. Prior: 2026-09-26 Phase 1 verified end to end: 01-UAT.md 7/7 passed 0 issues, 01-SECURITY.md threats_open 0 (14 mitigated + 2 accepted, 40 assertions 0 failures). Outstanding end-of-phase human check SATISFIED programmatically via gh run view.
 progress:
   total_phases: 10
   completed_phases: 1
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-09-24)
 
 Phase: 1 (Stack Decision, Scaffold & Packaging) — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
 Plan: 3 of 3
-Status: Phase 1 fully verified — ready for `/gsd-plan-phase 2`
+Status: Phase 1 verified; Phase 2 context captured — ready for `/gsd-plan-phase 2`
 Last activity: 2026-09-26 -- Ran /gsd-verify-work 1 then /gsd-secure-phase 1. Both clean.
 
 Progress: [█░░░░░░░░░] 10%
@@ -87,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 1]: 01-03: Switched origin from HTTPS to SSH -- GitHub refuses any OAuth-App push that creates or updates a workflow file without the 'workflow' scope, and gh's token has only repo/read:org/gist/admin:public_key; SSH was already authenticated and is gh's own configured git protocol, so this is the lower-privilege root-cause fix rather than 'gh auth refresh -s workflow'
 - [Phase 1]: 01-03: Kept all four macOS CI cells despite D-05 making them optional -- the repo is PUBLIC so Actions minutes are free, and crewai/macos-latest is the only environment in the entire project where CrewAI runs on Apple Silicon (the dev host is an Intel Mac that can never install it)
 - [Phase 1]: verify: Phase 1 security verification was done by direct scripted code inspection rather than by spawning gsd-security-auditor -- the register is 16 small, fully greppable/AST-checkable assertions against 5 committed files, so verifying them directly produced real evidence at lower cost than briefing a subagent to report on the same files
+- [Phase 2]: D-06: `RunStore` Protocol is **synchronous** -- SQLite's stdlib driver is sync so this matches the real I/O; ag2's async middleware bridges via `asyncio.to_thread` inside its own adapter. An async Protocol would force CrewAI's sync hooks to drive an event loop, where `asyncio.run` deadlocks against an already-running one
+- [Phase 2]: D-07: each adapter declares its own `CAPABILITIES` constant (extending Phase 1's `BACKEND`/`FRAMEWORK_VERSION` shape) rather than a central registry table, so the declaration cannot drift from the implementation. Accepted consequence: reading capabilities requires the extra installed, so there is **no offline path to print the full capability matrix** -- generate it in CI if docs need it
 - [Phase 1]: verify: **Threat IDs must be allocated from a single phase-wide sequence, not per-plan.** 01-01/01-02/01-03 independently reused `T-01-03` (hatchling build backend vs mutable action tags) and `T-01-04` (author-metadata disclosure vs the import allowlist) for different threats. Verifying such an ID against one plan leaves the other unverified while appearing covered; they are split `a`/`b` in 01-SECURITY.md
 
 ### Pending Todos

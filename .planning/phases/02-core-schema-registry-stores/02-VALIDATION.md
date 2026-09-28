@@ -85,8 +85,9 @@ plans must satisfy.
 - [ ] `tests/test_policy.py` — POLICY-01, POLICY-02, POLICY-04
 - [ ] `tests/test_registry.py` — WORKFLOW-01, WORKFLOW-02, WORKFLOW-03
 - [ ] `tests/test_store.py` — TRACE-03
-- [ ] `tests/conftest.py` — one `policy_yaml` fixture and one `store` fixture on `tmp_path`
+- [ ] `tests/conftest.py` — the `policy_yaml` fixture only. **The `store` fixture deliberately does NOT live here**: importing `eacp.store` at conftest scope would break collection of the entire suite (including Phase 1's `test_packaging.py`) for as long as `store.py` does not exist. It lives in `tests/test_store.py`.
 - [ ] `pyproject.toml` `[tool.pytest.ini_options]` += `filterwarnings = ["error::DeprecationWarning"]`
+- [ ] `pyproject.toml` `[[tool.mypy.overrides]]` for `langgraph.*`/`crewai.*`/`ag2.*` — **not optional.** `mypy --strict` is ALREADY red on a core-only host with 3 `import-not-found` errors from the Phase 1 adapter placeholders, so the static half of TRACE-03's gate could never report green without it. A per-line `# type: ignore` is worse: `--strict` enables `warn_unused_ignores`, so those ignores become errors wherever the extra IS installed.
 
 **No framework install needed. No CI change needed.** Phase 2 adds zero dependencies;
 the `core` job already runs `uv sync --locked --no-default-groups` then `pytest -q` with

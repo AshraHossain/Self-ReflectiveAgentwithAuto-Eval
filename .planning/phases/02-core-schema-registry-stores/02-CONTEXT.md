@@ -86,6 +86,60 @@ recorded so the planner has a definite starting point, not so it is treated as l
   target. Rejected: import-path prefix matching (bypassable) and Python entry-point
   groups (any installed package could inject one).
 
+
+### Resolved after research (2026-09-27) — answers to 02-RESEARCH.md Open Questions
+
+- **D-11: `version` is excluded from the policy hash, alongside `policy_id`.** Only the
+  enforceable rules are hashed. Rationale: if bumping `version` changed the hash, the
+  hash could no longer answer the one question it exists to answer — "did the rules
+  actually change between v1 and v2?" Excluding both makes that a string comparison.
+  Nothing is lost: the `runs` row carries `policy_id` and `policy_hash` as separate
+  columns.
+
+- **D-12: `requires` is a required field on every policy, not defaulted to `[]`.**
+  I initially judged that D-08's safety argument did not transfer here — an omitted
+  `requires` means "no special capability needed," which is not dangerous the way an
+  omitted budget is. That was wrong. Consider a policy with a non-empty
+  `required_approval_nodes` and no `requires`: registered against ag2 (snapshot-only),
+  its approval silently is not durable, and the author never had to confront the
+  choice. Same failure shape as the budget case — absence means permissive, quietly.
+  Forcing `requires: [durable_approval]` or `requires: [inline_approval]` makes the
+  durability decision explicit. Cost: one line in every policy file, including the
+  common `requires: []` case.
+
+- **D-13: the workflow registry is process-local for v1, not persisted.** Registration
+  happens in-process at startup. Rationale: the `runs` table is deliberately
+  self-contained — `workflow_id`, `backend_type`, `policy_id` and `policy_hash` are
+  columns, not foreign keys — so Phase 4's second-process approval CLI reads run history
+  without ever needing the registry. Persisting it would add a schema and a sync problem
+  for no v1 consumer. Flagged for the Phase 4 planner.
+
+### Amendments to earlier defaults, forced by research evidence
+
+- **D-08 amended:** use field-level `StrictInt` on counter fields, NOT model-level
+  `strict=True`. Model-level strict correctly blocks YAML `yes` → `int 1`, but also
+  rejects a plain YAML `100` for a `Decimal` field. Lax `Decimal` already rejects
+  booleans on its own.
+- **D-09 sharpened — this one is a real defect in my original default.**
+  `model_dump_json()` has no `sort_keys` parameter and emits keys in **field-declaration
+  order**, so reorganising the `Policy` class body would silently change every policy
+  hash. Worse, `set[str]` serializes in **nondeterministic order across processes**
+  (three runs, three orders). Canonical form must be
+  `json.dumps(model.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))`,
+  and tag/tool collections must be `list[str]` with a sort+dedupe validator, never
+  `set[str]`. Also: never pass `exclude_unset`/`exclude_defaults`/`exclude_none`, or an
+  unset optional stops hashing identically to an explicit `None`.
+- **New requirement not in any earlier decision:** `yaml.safe_load` silently accepts
+  **duplicate keys, last one wins** — verified. PyYAML collapses them before pydantic,
+  so `extra="forbid"` cannot see it. In a policy loader that is a limit-override
+  primitive, so a `SafeLoader` subclass rejecting duplicate keys is mandatory, not
+  optional. Pair with a byte cap (a 220-byte alias bomb expanded to 531,441 nodes in
+  0.06 s).
+- **`@runtime_checkable` must NOT be used on the `RunStore` Protocol** — it is
+  signature-blind and returned `True` for a class with entirely wrong arities. Static
+  checking via a one-line `store: RunStore = SQLiteRunStore(...)` probe under
+  `mypy --strict` catches what it cannot.
+
 ### Established patterns Phase 2 must follow (from Phase 1, not re-litigated)
 
 - `registry.py` is unclaimed and is this phase's natural home — `backends.py` was

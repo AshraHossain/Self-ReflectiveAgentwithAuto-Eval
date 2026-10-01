@@ -171,6 +171,11 @@ None. No external service configuration is required.
 - I did not add a `.gitignore` entry for `runs.db*` (RESEARCH's Runtime State Inventory suggests one) because `.gitignore` is outside this plan's `files_modified`. 02-03 or a later phase should add `runs.db`, `runs.db-wal` and `runs.db-shm`.
 - Phases 4, 5, 6 and 7 can type against `eacp.store.RunStore`. The ag2 adapter should bridge with a thread offload per D-06.
 
+## Self-Check: PASSED
+- Files exist: src/eacp/store.py, tests/test_store.py, 02-02-SUMMARY.md.
+- Commits exist on the branch: 4cc1fa3, b0d6ed2, 18a975e, b228600, 45fe239.
+- The working tree is clean, and the TDD RED (`test(02-02)`) and GREEN (`feat(02-02)`) gate commits are present.
+
 ---
 *Phase: 02-core-schema-registry-stores*
 *Completed: 2026-09-30*

@@ -177,6 +177,9 @@ None - no external service configuration required.
 ## Next Phase Readiness
 Ready for 02-02 (wave sibling, already running in parallel). Wave 2 (02-03) depends on both 02-01 and 02-02. It can import `Policy`, `Capability`, `KNOWN_CAPABILITIES`, `CapabilityError`, `DuplicateEntrypointError` and the `policy_yaml` fixture. Whole-project `pytest` / `mypy --strict` / `ruff check src tests` gates run there.
 
+## Self-Check: PASSED
+All 5 created/modified code files exist. Commits a6e04a8, decec62, 93ba4b8, 6ecc3d9 and 2ce5488 are present in `git log c77761c..HEAD`. The working tree is clean.
+
 ---
 *Phase: 02-core-schema-registry-stores*
 *Completed: 2026-10-01*

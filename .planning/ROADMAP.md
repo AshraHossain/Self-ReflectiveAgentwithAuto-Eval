@@ -62,12 +62,12 @@ Plans:
   3. A workflow entrypoint not on the allowlist is rejected at registration time, not at run time
   4. Run history can be written to and read back from the SQLite store via its `Protocol` interface with zero framework code imported
 
-**Plans**: 3 plans
+**Plans**: 2/3 plans executed
 Plans:
 **Wave 1** *(the two halves share nothing — run them in parallel)*
 
-- [ ] 02-01-PLAN.md — Exception types, capability vocabulary, hardened YAML loader, strict `Policy` schema, canonical content hash (wave 1)
-- [ ] 02-02-PLAN.md — Test/type-check gates, `RunStore` Protocol, `SQLiteRunStore` with query hardening and file permissions (wave 1)
+- [x] 02-01-PLAN.md — Exception types, capability vocabulary, hardened YAML loader, strict `Policy` schema, canonical content hash (wave 1)
+- [x] 02-02-PLAN.md — Test/type-check gates, `RunStore` Protocol, `SQLiteRunStore` with query hardening and file permissions (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
-| 2. Core Schema, Registry & Stores | 0/TBD | Not started | - |
+| 2. Core Schema, Registry & Stores | 2/3 | In Progress|  |
 | 3. Policy Engine, Budget Ledger & Mock LLM | 0/TBD | Not started | - |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |
 | 5. LangGraph Adapter & Tracer | 0/TBD | Not started | - |

@@ -9,3 +9,8 @@ build/
 
 # Personal working notes (Q&A / learning log) -- not part of the deliverable
 notes.md
+
+# gsd-tools process-local state (PID/session locks, run-scoped sentinels) -- never shared state
+.gsd/
+.planning/milestone.lock
+.planning/state.json

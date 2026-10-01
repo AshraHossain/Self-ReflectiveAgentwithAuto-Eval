@@ -13,8 +13,8 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 ### POLICY — Policy Schema & Engine
 
-- [ ] **POLICY-01**: Policy defined declaratively in YAML with a fixed field schema (no custom DSL), loaded via `yaml.safe_load` only
-- [ ] **POLICY-02**: Policy schema includes max_tokens_per_run, max_cost_per_day, allowed_tools, forbidden_tools, required_approval_nodes, compliance_tags
+- [x] **POLICY-01**: Policy defined declaratively in YAML with a fixed field schema (no custom DSL), loaded via `yaml.safe_load` only
+- [x] **POLICY-02**: Policy schema includes max_tokens_per_run, max_cost_per_day, allowed_tools, forbidden_tools, required_approval_nodes, compliance_tags
 - [ ] **POLICY-03**: Policy engine (`decide()`) is pure — no I/O, no clock, no framework imports — and returns a structured `Decision` object (policy id, version, rule, limit, observed value), never a bare boolean
 - [ ] **POLICY-04**: Every policy is content-hashed; the hash is pinned to every run record and every audit log entry for reproducibility
 
@@ -125,8 +125,8 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 | PACKAGE-02 | Phase 1 | Complete |
 | PACKAGE-03 | Phase 1 | Complete |
 | PACKAGE-04 | Phase 1 | Complete |
-| POLICY-01 | Phase 2 | Pending |
-| POLICY-02 | Phase 2 | Pending |
+| POLICY-01 | Phase 2 | Complete |
+| POLICY-02 | Phase 2 | Complete |
 | POLICY-04 | Phase 2 | Pending |
 | WORKFLOW-01 | Phase 2 | Pending |
 | WORKFLOW-02 | Phase 2 | Pending |

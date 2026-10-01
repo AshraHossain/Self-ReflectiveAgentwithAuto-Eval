@@ -1,14 +1,27 @@
 """POLICY-01, POLICY-02 and POLICY-04's executable contract."""
 
+import hashlib
+import json
+import os
+import subprocess
 import sys
 from collections.abc import Callable
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from eacp.errors import PolicyError
-from eacp.policy import MAX_POLICY_BYTES, Policy, load_policy_file, load_yaml_mapping
+from eacp.policy import (
+    _IDENTITY_FIELDS,
+    MAX_POLICY_BYTES,
+    Policy,
+    _canonical,
+    load_policy_file,
+    load_yaml_mapping,
+    policy_hash,
+)
 
 PolicyYaml = Callable[..., str]
 
@@ -137,3 +150,102 @@ def test_error_message_carries_no_environment_paths(
     message = str(info.value)
     for leak in (sys.prefix, sys.executable, "site-packages"):
         assert leak not in message
+
+
+# --- POLICY-04: canonical content hash -------------------------------------------------
+
+_HASH_A = """
+policy_id: alpha
+version: 1
+max_tokens_per_run: 100
+max_cost_per_day: 25.00
+allowed_tools: [search, summarize]
+forbidden_tools: [send_email]
+required_approval_nodes: [send]
+compliance_tags: [soc2, gdpr]
+requires: [durable_approval]
+"""
+
+# Same rules: different key order, list order, policy_id, version, and 25.0 vs 25.00.
+_HASH_B = """
+requires: [durable_approval]
+compliance_tags: [gdpr, soc2]
+version: 7
+allowed_tools: [summarize, search]
+max_cost_per_day: 25.0
+forbidden_tools: [send_email]
+policy_id: beta
+required_approval_nodes: [send]
+max_tokens_per_run: 100
+"""
+
+
+def _policy(text: str) -> Policy:
+    return Policy.model_validate(load_yaml_mapping(text))
+
+
+def test_hash_is_content_addressed() -> None:
+    a, b = policy_hash(_policy(_HASH_A)), policy_hash(_policy(_HASH_B))
+    assert a == b
+    assert len(a) == 64 and set(a) <= set("0123456789abcdef")
+
+
+@pytest.mark.parametrize(
+    ("field", "new_value", "moves_hash"),
+    [
+        ("max_tokens_per_run", 101, True),
+        ("max_cost_per_day", "26", True),
+        ("allowed_tools", ["search"], True),
+        ("forbidden_tools", [], True),
+        ("required_approval_nodes", [], True),
+        ("compliance_tags", ["soc2"], True),
+        ("requires", [], True),
+        # D-11: identity, not content. A version bump must not look like a rule change.
+        ("policy_id", "renamed", False),
+        ("version", 2, False),
+    ],
+)
+def test_hash_changes_when_a_limit_changes(field: str, new_value: Any, moves_hash: bool) -> None:
+    base = _policy(_HASH_A)
+    changed = Policy.model_validate({**base.model_dump(mode="json"), field: new_value})
+    assert (policy_hash(changed) != policy_hash(base)) is moves_hash
+
+
+def test_hashed_key_set_is_pinned() -> None:
+    # T-02-08: a new field must be deliberately classified as content or identity.
+    p = _policy(_HASH_A)
+    payload = {k: v for k, v in p.model_dump(mode="json").items() if k not in _IDENTITY_FIELDS}
+    assert set(payload) == {
+        "max_tokens_per_run",
+        "max_cost_per_day",
+        "allowed_tools",
+        "forbidden_tools",
+        "required_approval_nodes",
+        "compliance_tags",
+        "requires",
+    }
+    # Tie the literal to what policy_hash actually digests, not a re-derivation of it.
+    assert policy_hash(p) == hashlib.sha256(_canonical(payload).encode("utf-8")).hexdigest()
+
+
+def test_hash_is_stable_across_processes() -> None:
+    # T-02-07: an unordered collection field serialized differently under each hash seed.
+    p = _policy(_HASH_A)
+    child = (
+        "import json, sys\n"
+        "from eacp.policy import Policy, policy_hash\n"
+        "print(policy_hash(Policy.model_validate(json.load(sys.stdin))))\n"
+    )
+    blob = json.dumps(p.model_dump(mode="json"))
+    digests = {
+        subprocess.run(
+            [sys.executable, "-c", child],
+            input=blob,
+            capture_output=True,
+            text=True,
+            check=True,
+            env={**os.environ, "PYTHONHASHSEED": seed},
+        ).stdout.strip()
+        for seed in ("0", "1", "2", "3")
+    }
+    assert digests == {policy_hash(p)}

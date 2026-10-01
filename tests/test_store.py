@@ -8,6 +8,7 @@ reports that the table does not exist (02-RESEARCH.md Pitfall 4).
 from __future__ import annotations
 
 import sqlite3
+import stat
 import threading
 import uuid
 from contextlib import closing
@@ -16,7 +17,14 @@ from pathlib import Path
 
 import pytest
 
-from eacp.store import RunRecord, RunStore, SQLiteRunStore, StepRecord, utc_now
+from eacp.store import (
+    MAX_LIST_LIMIT,
+    RunRecord,
+    RunStore,
+    SQLiteRunStore,
+    StepRecord,
+    utc_now,
+)
 
 T0 = "2026-09-27T12:00:00.000000+00:00"
 
@@ -158,3 +166,68 @@ def test_store_survives_reopen(tmp_path: Path) -> None:
     with closing(sqlite3.connect(db)) as c:
         assert c.execute("PRAGMA journal_mode").fetchone()[0].lower() == "wal"
         assert c.execute("PRAGMA user_version").fetchone()[0] == 1
+
+
+# --- read path and hardening (T-02-06, T-02-10, T-02-11) -----------------------------------
+
+
+def test_list_runs_filters(store: RunStore) -> None:
+    a1 = _run("alpha", "2026-09-25T00:00:00.000000+00:00")
+    b1 = _run("beta", "2026-09-26T00:00:00.000000+00:00")
+    a2 = _run("alpha", "2026-09-27T00:00:00.000000+00:00")
+    for r in (a1, b1, a2):
+        store.start_run(r)
+    since = "2026-09-26T00:00:00.000000+00:00"
+
+    assert list(store.list_runs()) == [a2, b1, a1]  # everything, newest-first
+    assert list(store.list_runs(workflow_id="alpha")) == [a2, a1]
+    assert list(store.list_runs(since=since)) == [a2, b1]  # boundary is inclusive
+    assert list(store.list_runs(workflow_id="alpha", since=since)) == [a2]
+    assert list(store.list_runs(workflow_id="does-not-exist")) == []
+
+
+def test_filter_value_is_parameterized(store: RunStore) -> None:
+    run = _run("alpha")
+    store.start_run(run)
+    # The benign value must match, or an always-empty list_runs would pass the hostile check.
+    assert list(store.list_runs(workflow_id="alpha")) == [run]
+
+    assert list(store.list_runs(workflow_id="alpha'; DROP TABLE runs;--")) == []
+    assert list(store.list_runs(workflow_id="alpha' OR '1'='1")) == []
+    assert list(store.list_runs(since="' OR 1=1;--")) == []
+    assert store.get_run(run.run_id) == run  # the table survived
+
+
+def test_list_runs_limit_is_clamped(tmp_path: Path) -> None:
+    db = tmp_path / "runs.db"
+    store: RunStore = SQLiteRunStore(db)
+    # Bulk-load past the ceiling directly; 1001 start_run calls would only test speed.
+    with closing(sqlite3.connect(db)) as c, c:
+        c.executemany(
+            "INSERT INTO runs (run_id, workflow_id, backend_type, policy_id, policy_hash,"
+            " status, started_at, ended_at, metrics) VALUES (?,?,?,?,?,?,?,?,?)",
+            [
+                (uuid.uuid4().hex, "wf", "langgraph", "p", "h", "succeeded", T0, T0, "{}")
+                for _ in range(MAX_LIST_LIMIT + 1)
+            ],
+        )
+
+    assert len(store.list_runs(limit=10**9)) == MAX_LIST_LIMIT
+    assert len(store.list_runs(limit=2)) == 2
+    assert len(store.list_runs(limit=0)) == 1
+    assert len(store.list_runs(limit=-5)) == 1
+
+
+def test_store_file_is_not_world_readable(tmp_path: Path) -> None:
+    db = tmp_path / "runs.db"
+    store = SQLiteRunStore(db)
+    # SQLite deletes -wal/-shm when the last connection closes, so hold one open while
+    # writing; otherwise the sidecar half of this test asserts against zero files.
+    with closing(sqlite3.connect(db)) as holder:
+        holder.execute("SELECT count(*) FROM runs").fetchone()
+        store.start_run(_run())
+        files = sorted(tmp_path.glob("runs.db*"))
+        assert {p.name for p in files} >= {"runs.db", "runs.db-wal", "runs.db-shm"}, files
+        leaky = {p.name: oct(stat.S_IMODE(p.stat().st_mode)) for p in files}
+        assert all(int(m, 8) & 0o077 == 0 for m in leaky.values()), leaky
+    assert stat.S_IMODE(db.stat().st_mode) == 0o600

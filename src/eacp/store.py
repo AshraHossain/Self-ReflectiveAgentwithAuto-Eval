@@ -30,7 +30,7 @@ from typing import Literal, Protocol
 # is a different outcome from `failed`, a crash.
 RunStatus = Literal["running", "awaiting_approval", "succeeded", "failed", "denied"]
 
-SCHEMA_VERSION = 1
+MAX_LIST_LIMIT = 1000  # T-02-10: list_runs never materializes more than this
 
 
 def utc_now() -> str:

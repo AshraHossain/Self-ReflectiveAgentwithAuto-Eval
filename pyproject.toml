@@ -67,6 +67,10 @@ markers = [
   "crewai: requires the crewai extra",
   "ag2: requires the ag2 extra",
 ]
+# Python 3.12 deprecated sqlite3's implicit datetime adapter; this makes reintroducing it a red
+# test. Third-party noise gets a narrow `ignore:...:module` entry AFTER this line (last match
+# wins) — never one that would let a sqlite3 deprecation through.
+filterwarnings = ["error::DeprecationWarning"]
 
 [tool.ruff]
 line-length = 100
@@ -79,3 +83,10 @@ select = ["E", "F", "I", "UP", "B"]
 python_version = "3.12"
 strict = true
 files = ["src", "tests"]
+
+# Core-only hosts (CI `core` job, dev) have none of the frameworks installed, so the adapter
+# placeholders' imports are unresolvable there. Scoped to the three framework roots only: a
+# typo'd `eacp` import must still be an error.
+[[tool.mypy.overrides]]
+module = ["langgraph.*", "crewai.*", "ag2.*"]
+ignore_missing_imports = true

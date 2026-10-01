@@ -54,7 +54,7 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 - [ ] **TRACE-01**: Every run produces a per-node/per-agent trace: latency, token usage, tool-call outcomes
 - [ ] **TRACE-02**: Trace spans use OpenTelemetry GenAI semantic-convention attribute names (`gen_ai.*`) so the storage format is exportable later without a rewrite
-- [ ] **TRACE-03**: Run history (run_id, workflow_id, backend_type, timestamps, status, metrics) is persisted to a pluggable store, with a SQLite implementation for v1
+- [x] **TRACE-03**: Run history (run_id, workflow_id, backend_type, timestamps, status, metrics) is persisted to a pluggable store, with a SQLite implementation for v1
 - [ ] **TRACE-04**: On LangGraph, a resumed (post-approval) run's token/span counts equal what a single uninterrupted pass would produce (no double-counting from node replay)
 
 ### LANGGRAPH — LangGraph Adapter
@@ -131,7 +131,7 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 | WORKFLOW-01 | Phase 2 | Pending |
 | WORKFLOW-02 | Phase 2 | Pending |
 | WORKFLOW-03 | Phase 2 | Pending |
-| TRACE-03 | Phase 2 | Pending |
+| TRACE-03 | Phase 2 | Complete |
 | POLICY-03 | Phase 3 | Pending |
 | BUDGET-01 | Phase 3 | Pending |
 | BUDGET-02 | Phase 3 | Pending |

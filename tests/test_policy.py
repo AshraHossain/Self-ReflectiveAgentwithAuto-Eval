@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from eacp import policy as policy_mod
 from eacp.errors import PolicyError
 from eacp.policy import MAX_POLICY_BYTES, Policy, load_policy_file, load_yaml_mapping
 
@@ -91,7 +90,7 @@ def test_oversized_document_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     def parser_must_not_run(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("the YAML parser ran on an oversized document")
 
-    monkeypatch.setattr(policy_mod.yaml, "load", parser_must_not_run)
+    monkeypatch.setattr("yaml.load", parser_must_not_run)
     with pytest.raises(PolicyError, match=str(MAX_POLICY_BYTES)):
         load_yaml_mapping(text)
 

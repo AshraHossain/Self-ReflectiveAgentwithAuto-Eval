@@ -194,7 +194,8 @@ def test_filter_value_is_parameterized(store: RunStore) -> None:
 
     assert list(store.list_runs(workflow_id="alpha'; DROP TABLE runs;--")) == []
     assert list(store.list_runs(workflow_id="alpha' OR '1'='1")) == []
-    assert list(store.list_runs(since="' OR 1=1;--")) == []
+    # Bound, this sorts after every timestamp (no match); interpolated, it would match all.
+    assert list(store.list_runs(since="9999' OR '1'='1")) == []
     assert store.get_run(run.run_id) == run  # the table survived
 
 

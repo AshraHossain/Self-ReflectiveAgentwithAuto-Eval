@@ -12,7 +12,10 @@ filter rely on. Never hand a ``datetime`` to the driver: its implicit adapter is
 since Python 3.12 and the test suite turns that warning into a failure.
 
 On disk the store is THREE files in WAL mode: ``runs.db``, ``runs.db-wal`` and
-``runs.db-shm``. Copying or backing up "the store file" alone loses committed data.
+``runs.db-shm``. Copying or backing up "the store file" alone loses committed data. The
+database file is made owner-read/write only (0600) when the store is opened; SQLite creates
+the ``-wal`` and ``-shm`` sidecars with the database file's own permissions, so that one
+restriction covers all three.
 """
 
 from __future__ import annotations
@@ -169,6 +172,12 @@ class SQLiteRunStore:
         self._path = Path(path)
         # Otherwise the driver fails with an unhelpful "unable to open database file".
         self._path.parent.mkdir(parents=True, exist_ok=True)
+        # T-02-11: SQLite would create the file at a umask-dependent mode (measured 0644) and
+        # run history carries workflow/policy ids and metrics. Restrict it BEFORE the first
+        # connect: SQLite creates -wal/-shm with the database file's own mode, so this covers
+        # all three files.
+        self._path.touch(mode=0o600, exist_ok=True)
+        self._path.chmod(0o600)
         with closing(self._connect()) as c:
             # First statement, before any DML: under the legacy transaction default the first
             # DML opens an implicit transaction and this pragma then fails. WAL persists in the
@@ -250,7 +259,22 @@ class SQLiteRunStore:
     def list_runs(
         self, *, workflow_id: str | None = None, since: str | None = None, limit: int = 100
     ) -> Sequence[RunRecord]:
-        return []
+        # T-02-06: optional filters are literal SQL fragments; every value is a bound
+        # parameter. Table names and sort direction cannot be bound at all, so they are
+        # authored literals and never derived from caller input.
+        sql = ["SELECT * FROM runs WHERE 1=1"]
+        args: list[object] = []
+        if workflow_id is not None:
+            sql.append("AND workflow_id=?")
+            args.append(workflow_id)
+        if since is not None:
+            sql.append("AND started_at>=?")
+            args.append(since)
+        sql.append("ORDER BY started_at DESC LIMIT ?")
+        args.append(min(max(limit, 1), MAX_LIST_LIMIT))  # T-02-10
+        with closing(self._connect()) as c:
+            rows = c.execute(" ".join(sql), args).fetchall()
+        return [_row_to_run(r) for r in rows]
 
     def list_steps(self, run_id: str) -> Sequence[StepRecord]:
         with closing(self._connect()) as c:

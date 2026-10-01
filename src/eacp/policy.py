@@ -4,6 +4,8 @@ This module is the single PyYAML entry point in ``src/``. Plain ``yaml.safe_load
 used anywhere: it blocks code execution but silently keeps the LAST of two repeated keys.
 """
 
+import hashlib
+import json
 from collections import Counter
 from collections.abc import Hashable
 from decimal import Decimal, InvalidOperation
@@ -103,6 +105,34 @@ class Policy(BaseModel):
         if dupes:
             raise ValueError(f"duplicate entries are not allowed: {dupes}")
         return sorted(v)  # author's list order must not affect the content hash
+
+
+# D-11: identity, not content. The hash answers "did the enforceable rules change between
+# v1 and v2?"; a version bump that moved it would destroy that property. Nothing is lost:
+# run records carry policy_id and policy_hash as separate columns.
+_IDENTITY_FIELDS: frozenset[str] = frozenset({"policy_id", "version"})
+
+
+def _canonical(payload: dict[str, Any]) -> str:
+    """The single canonical JSON form. Phase 4's audit log reuses this; never write a second."""
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def policy_hash(policy: Policy) -> str:
+    """SHA-256 hex digest of the policy's enforceable content (POLICY-04).
+
+    This is content addressing, not a signature or a MAC: it proves which rules governed a
+    run, not who authored them.
+
+    Two traps:
+    - pydantic's direct-to-JSON-string serializer has no sort-keys parameter (2.12.5) and
+      emits field-declaration order, so reordering the class body would change every
+      stored hash. Hence the dict dump + stdlib ``json`` with ``sort_keys``.
+    - NEVER narrow the payload with exclude_unset / exclude_defaults / exclude_none: once an
+      optional field exists, an absent value would hash differently from an explicit null.
+    """
+    payload = policy.model_dump(mode="json", exclude=set(_IDENTITY_FIELDS))
+    return hashlib.sha256(_canonical(payload).encode("utf-8")).hexdigest()
 
 
 def _render(exc: ValidationError) -> str:

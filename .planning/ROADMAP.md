@@ -12,7 +12,7 @@ EACP is built bottom-up: a stable, framework-free foundation (schema, policy eng
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Stack Decision, Scaffold & Packaging** - Installable core with zero framework lock-in and pinned, reproducible extras (completed 2026-09-26)
-- [ ] **Phase 2: Core Schema, Registry & Stores** - Policies and workflows are declared, validated, and stored consistently
+- [x] **Phase 2: Core Schema, Registry & Stores** - Policies and workflows are declared, validated, and stored consistently (completed 2026-10-02)
 - [ ] **Phase 3: Policy Engine, Budget Ledger & Mock LLM** - Enforcement logic proven correct with zero frameworks installed
 - [ ] **Phase 4: Approval Service, Audit Log & CLI** - Human-in-the-loop gate and compliance audit trail, framework-independent
 - [ ] **Phase 5: LangGraph Adapter & Tracer** - First real framework integration with durable pause/resume
@@ -62,7 +62,7 @@ Plans:
   3. A workflow entrypoint not on the allowlist is rejected at registration time, not at run time
   4. Run history can be written to and read back from the SQLite store via its `Protocol` interface with zero framework code imported
 
-**Plans**: 3/3 plans executed
+**Plans**: 3/3 plans complete
 Plans:
 **Wave 1** *(the two halves share nothing — run them in parallel)*
 
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
-| 2. Core Schema, Registry & Stores | 3/3 | In Progress|  |
+| 2. Core Schema, Registry & Stores | 3/3 | Complete   | 2026-10-02 |
 | 3. Policy Engine, Budget Ledger & Mock LLM | 0/TBD | Not started | - |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |
 | 5. LangGraph Adapter & Tracer | 0/TBD | Not started | - |

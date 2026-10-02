@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 02
 current_phase_name: Core Schema, Registry & Stores
 status: executing
-stopped_at: Phase 2 planned and reviewed -- 3 plans, 9 tasks, 2 waves, 17 threat rows. Ready for /gsd-execute-phase 2
-last_updated: "2026-10-01T04:37:46.518Z"
-last_activity: 2026-09-30
-last_activity_desc: Phase 02 execution started
-state_head: c77761c68ffc91a4ef0d088ac81ec64a50986ac9
+stopped_at: Completed 02-03-PLAN.md
+last_updated: "2026-10-02T18:09:43.691Z"
+last_activity: 2026-10-02
+last_activity_desc: 02-03 workflow registry complete; Phase 02 execution complete
+state_head: 0eef798d0003a61acb2234358dbd573ee7ccc4de
 progress:
   total_phases: 10
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 6
 milestone_name: milestone
 ---
 
@@ -30,9 +30,9 @@ See: .planning/PROJECT.md (updated 2026-09-24)
 
 Phase: 02 (Core Schema, Registry & Stores) — EXECUTING
 Prior: Phase 1 — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
-Plan: 1 of 3
-Status: Executing Phase 02
-Last activity: 2026-09-30 — Phase 02 execution started
+Plan: 3 of 3 (all plans executed)
+Status: Phase 02 execution complete — ready for /gsd-verify-work 2
+Last activity: 2026-10-02 — 02-03 workflow registry complete
 
 Progress: [█░░░░░░░░░] 10%
 
@@ -69,6 +69,11 @@ macos-latest, the latter after `macOS runner arch: arm64`). Evidence in `01-UAT.
 - Trend: ↑ slower (01-03 spent most of its time on two real external blockers — an unresolvable action tag and an OAuth push rejection — plus two CI round-trips)
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 02 P03 | 942min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -94,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 2]: D-06: `RunStore` Protocol is **synchronous** -- SQLite's stdlib driver is sync so this matches the real I/O; ag2's async middleware bridges via `asyncio.to_thread` inside its own adapter. An async Protocol would force CrewAI's sync hooks to drive an event loop, where `asyncio.run` deadlocks against an already-running one
 - [Phase 2]: D-07: each adapter declares its own `CAPABILITIES` constant (extending Phase 1's `BACKEND`/`FRAMEWORK_VERSION` shape) rather than a central registry table, so the declaration cannot drift from the implementation. Accepted consequence: reading capabilities requires the extra installed, so there is **no offline path to print the full capability matrix** -- generate it in CI if docs need it
 - [Phase 1]: verify: **Threat IDs must be allocated from a single phase-wide sequence, not per-plan.** 01-01/01-02/01-03 independently reused `T-01-03` (hatchling build backend vs mutable action tags) and `T-01-04` (author-metadata disclosure vs the import allowlist) for different threats. Verifying such an ID against one plan leaves the other unverified while appearing covered; they are split `a`/`b` in 01-SECURITY.md
+- [Phase 02]: 02-03: Workflow is frozen=True as well as extra=forbid so a registered workflow cannot be mutated past the gates
+- [Phase 02]: 02-03: register_workflow runs duplicate-id and policy_id checks, then entrypoint -> backend name -> load_backend_module; capability gate is a set difference against the adapter's own CAPABILITIES
 
 ### Pending Todos
 
@@ -122,6 +129,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-09-26T19:38:44.976Z
-Stopped at: Completed 01-03-PLAN.md -- Phase 1 execution COMPLETE (3/3 plans), ready for /gsd-verify-work
+Last session: 2026-10-02T18:09:43.641Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None

@@ -62,7 +62,7 @@ Plans:
   3. A workflow entrypoint not on the allowlist is rejected at registration time, not at run time
   4. Run history can be written to and read back from the SQLite store via its `Protocol` interface with zero framework code imported
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans executed
 Plans:
 **Wave 1** *(the two halves share nothing — run them in parallel)*
 
@@ -71,7 +71,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-03-PLAN.md — Per-adapter `CAPABILITIES`, entrypoint allowlist, `Workflow` schema, WORKFLOW-03 capability gate (wave 2)
+- [x] 02-03-PLAN.md — Per-adapter `CAPABILITIES`, entrypoint allowlist, `Workflow` schema, WORKFLOW-03 capability gate (wave 2)
 
 ### Phase 3: Policy Engine, Budget Ledger & Mock LLM
 
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
-| 2. Core Schema, Registry & Stores | 2/3 | In Progress|  |
+| 2. Core Schema, Registry & Stores | 3/3 | In Progress|  |
 | 3. Policy Engine, Budget Ledger & Mock LLM | 0/TBD | Not started | - |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |
 | 5. LangGraph Adapter & Tracer | 0/TBD | Not started | - |

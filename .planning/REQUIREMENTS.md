@@ -20,9 +20,9 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 ### WORKFLOW — Workflow Schema & Registry
 
-- [ ] **WORKFLOW-01**: Workflow schema is id, name, description, backend_type (langgraph|crewai|ag2), entrypoint, policy_id — entrypoint is an opaque pointer to user-authored code, never workflow topology (no nodes/agents/edges fields)
-- [ ] **WORKFLOW-02**: Registry validates a workflow's entrypoint against an allowlist at registration time (rejects arbitrary/malicious entrypoints)
-- [ ] **WORKFLOW-03**: Registry resolves workflow_id → policy_id and fails loudly at registration if the workflow's backend adapter lacks a capability the policy requires (e.g. a `durable_pause` requirement against an adapter that can't provide it)
+- [x] **WORKFLOW-01**: Workflow schema is id, name, description, backend_type (langgraph|crewai|ag2), entrypoint, policy_id — entrypoint is an opaque pointer to user-authored code, never workflow topology (no nodes/agents/edges fields)
+- [x] **WORKFLOW-02**: Registry validates a workflow's entrypoint against an allowlist at registration time (rejects arbitrary/malicious entrypoints)
+- [x] **WORKFLOW-03**: Registry resolves workflow_id → policy_id and fails loudly at registration if the workflow's backend adapter lacks a capability the policy requires (e.g. a `durable_pause` requirement against an adapter that can't provide it)
 
 ### BUDGET — Cost & Rate-Limit Enforcement
 
@@ -128,9 +128,9 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 | POLICY-01 | Phase 2 | Complete |
 | POLICY-02 | Phase 2 | Complete |
 | POLICY-04 | Phase 2 | Pending |
-| WORKFLOW-01 | Phase 2 | Pending |
-| WORKFLOW-02 | Phase 2 | Pending |
-| WORKFLOW-03 | Phase 2 | Pending |
+| WORKFLOW-01 | Phase 2 | Complete |
+| WORKFLOW-02 | Phase 2 | Complete |
+| WORKFLOW-03 | Phase 2 | Complete |
 | TRACE-03 | Phase 2 | Complete |
 | POLICY-03 | Phase 3 | Pending |
 | BUDGET-01 | Phase 3 | Pending |

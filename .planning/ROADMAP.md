@@ -139,6 +139,7 @@ Plans:
   1. A real ag2 multi-agent conversation runs under EACP policy enforcement using ag2's middleware/observer/hitl_hook seams
   2. A policy that requires durable pause (a capability ag2 doesn't have) fails loudly at registration against the ag2 adapter, rather than silently degrading
   3. The same policy produces the same allow/deny/budget-halt outcome across LangGraph, CrewAI, and ag2 in a parametrized conformance test
+  4. Every adapter's declared `durable_approval`/`inline_approval` capability is honest: for each adapter claiming `durable_approval`, a run paused by it genuinely survives a process exit and resumes correctly (T-02-12, transferred from Phase 2 — `register_workflow`'s capability gate only checks a backend's *declaration* against a policy's *requirement*; nothing before this phase can verify the declaration against actual adapter behavior, since no adapter executes a real workflow until Phase 5+)
 
 **Plans**: TBD
 

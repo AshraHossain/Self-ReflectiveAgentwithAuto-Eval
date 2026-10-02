@@ -77,7 +77,7 @@ class Policy(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     policy_id: _PolicyId
-    version: StrictInt
+    version: Annotated[StrictInt, Field(ge=1)]
     max_tokens_per_run: Annotated[StrictInt, Field(ge=1)]
     max_cost_per_day: Annotated[Decimal, Field(ge=Decimal(0))]
     # Ordered lists, never sets: a set serializes in hash-seed-dependent order (Finding 1).

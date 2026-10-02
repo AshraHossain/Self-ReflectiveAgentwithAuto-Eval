@@ -12,6 +12,8 @@ import importlib.metadata
 
 import langgraph  # noqa: F401  proves the extra resolved; lazy via eacp.backends
 
+from eacp.capabilities import Capability
+
 BACKEND = "langgraph"
 
 # Distribution metadata, not a module attribute: langgraph 1.x exposes no
@@ -22,3 +24,7 @@ try:
     FRAMEWORK_VERSION = importlib.metadata.version("langgraph")
 except importlib.metadata.PackageNotFoundError:
     FRAMEWORK_VERSION = getattr(langgraph, "__version__", "unknown")
+
+# D-07: declared next to the code that implements it. Durable via the SQLite checkpointer
+# (APPROVAL-04).
+CAPABILITIES: frozenset[Capability] = frozenset({"durable_approval", "inline_approval"})

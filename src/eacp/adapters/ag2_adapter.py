@@ -13,6 +13,8 @@ import importlib.metadata
 
 import ag2  # noqa: F401  proves the extra resolved; lazy via eacp.backends
 
+from eacp.capabilities import Capability
+
 BACKEND = "ag2"
 
 # Distribution metadata first, so all three adapters report a version the same
@@ -23,3 +25,7 @@ try:
     FRAMEWORK_VERSION = importlib.metadata.version("ag2")
 except importlib.metadata.PackageNotFoundError:
     FRAMEWORK_VERSION = getattr(ag2, "__version__", "unknown")
+
+# D-07: inline only. APPROVAL-05 scopes ag2 to inline approval for v1; true durable
+# pause/resume here is a framework-level limitation deferred to v2 (ROADMAP.md).
+CAPABILITIES: frozenset[Capability] = frozenset({"inline_approval"})

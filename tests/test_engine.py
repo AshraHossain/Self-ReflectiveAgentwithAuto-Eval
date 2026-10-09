@@ -9,6 +9,7 @@ import pytest
 
 import eacp.engine
 from eacp.engine import BudgetState, Decision, LlmCall, ToolCall, Usage, decide, output_estimate
+from eacp.errors import PolicyDenied
 from eacp.policy import COST_EXP, Policy, load_yaml_mapping
 
 PolicyYaml = Callable[..., str]
@@ -198,3 +199,26 @@ def test_engine_imports_are_pure() -> None:
         elif isinstance(node, ast.Import):
             mods |= {a.name for a in node.names}
     assert mods <= allowed, f"engine.py imports outside the pure allowlist: {mods - allowed}"
+
+
+# --- Task 3: PolicyDenied ---------------------------------------------------------------
+
+
+def test_policy_denied_carries_the_decision() -> None:
+    decision = Decision("deny", "demo", 1, "max_cost_per_day", Decimal("1.00"), Decimal("1.50"))
+    exc = PolicyDenied(decision)
+    assert exc.decision is decision
+
+
+def test_policy_denied_is_exception_not_valueerror() -> None:
+    decision = Decision("deny", "demo", 1, "max_cost_per_day", Decimal("1.00"), Decimal("1.50"))
+    exc = PolicyDenied(decision)
+    assert not isinstance(exc, ValueError)
+    assert isinstance(exc, Exception)
+
+
+def test_policy_denied_str_names_the_rule() -> None:
+    decision = Decision("deny", "demo", 1, "max_cost_per_day", Decimal("1.00"), Decimal("1.50"))
+    message = str(PolicyDenied(decision))
+    for needle in ("max_cost_per_day", "1.00", "1.50"):
+        assert needle in message, f"PolicyDenied message missing {needle!r}: {message}"

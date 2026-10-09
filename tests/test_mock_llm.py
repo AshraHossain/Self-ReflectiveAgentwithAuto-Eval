@@ -10,7 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from eacp.engine import LlmCall, Usage
+from eacp.engine import LlmCall, ToolCall, Usage
+from eacp.errors import PolicyDenied
 from eacp.ledger import SQLiteBudgetLedger
 from eacp.mock_llm import MockLLM, MockToolCall, MockTurn
 from eacp.policy import Policy, load_yaml_mapping
@@ -111,3 +112,100 @@ def test_mock_turns_flow_through_a_real_ledger(
     assert spent.quantize(Decimal("0.000001")) == expected_cost.quantize(Decimal("0.000001"))
     # Reflects the SCRIPTED usage (22 + 35 = 57 tokens), not the 30-token pre-call estimate.
     assert ledger.run_usage("run1").tokens == 57
+
+
+# --- Task 2: runaway loop stopped by budget and by max_steps; forbidden tool; MISSING --
+
+
+def test_runaway_mock_is_stopped_before_the_blocking_call(
+    tmp_path: Path, policy_yaml: PolicyYaml
+) -> None:
+    policy = _policy(
+        policy_yaml(
+            max_steps=1_000_000,
+            max_tokens_per_run=1_000_000,
+            max_cost_per_day="0.00050",
+            model_prices={"mock": {"input_per_mtok": 1, "output_per_mtok": 2}},
+        )
+    )
+    ledger = SQLiteBudgetLedger(tmp_path / "ledger.db")
+    usage = Usage(40, 12, "provider")
+    assert usage.input_tokens is not None and usage.output_tokens is not None
+    mock = MockLLM([MockTurn(usage=usage)], loop=True)
+    request = LlmCall("mock", input_tokens=40, max_output_tokens=12)
+
+    per_call_cost = (
+        usage.input_tokens * Decimal(1) + usage.output_tokens * Decimal(2)
+    ) / Decimal(1_000_000)
+    # EXPECTED_N is computed from the policy's price and the scripted usage, never a
+    # hardcoded literal (Pitfall 5): the number of calls that fit under the cap before the
+    # (EXPECTED_N + 1)th call would push spend over max_cost_per_day. A hardcoded literal
+    # could pass even if the block fired one call too late; the computed value cannot.
+    expected_n = int(policy.max_cost_per_day // per_call_cost)
+
+    with pytest.raises(PolicyDenied) as info:
+        for i in range(100):
+            admission = ledger.admit("run1", str(i), policy, request)
+            turn = mock.complete([])
+            ledger.reconcile(admission, turn.usage)
+
+    assert info.value.decision.rule == "max_cost_per_day"
+    assert mock.calls == expected_n
+
+
+def test_runaway_mock_is_stopped_by_max_steps_independent_of_budget(
+    tmp_path: Path, policy_yaml: PolicyYaml
+) -> None:
+    policy = _policy(
+        policy_yaml(
+            max_steps=5,
+            max_tokens_per_run=1_000_000_000,
+            max_cost_per_day="1000000",
+            model_prices={"mock": {"input_per_mtok": 1, "output_per_mtok": 2}},
+        )
+    )
+    ledger = SQLiteBudgetLedger(tmp_path / "ledger.db")
+    mock = MockLLM([MockTurn(usage=Usage(40, 12, "provider"))], loop=True)
+    request = LlmCall("mock", input_tokens=40, max_output_tokens=12)
+
+    with pytest.raises(PolicyDenied) as info:
+        for i in range(100):
+            admission = ledger.admit("run1", str(i), policy, request)
+            turn = mock.complete([])
+            ledger.reconcile(admission, turn.usage)
+
+    assert info.value.decision.rule == "max_steps"
+    assert mock.calls == policy.max_steps
+
+
+def test_forbidden_tool_call_is_denied_before_the_mock_is_invoked(
+    tmp_path: Path, policy_yaml: PolicyYaml
+) -> None:
+    policy = _policy(policy_yaml())  # default fixture already forbids "send_email"
+    ledger = SQLiteBudgetLedger(tmp_path / "ledger.db")
+    # Scripted purely as evidence of what WOULD have been sent to a real tool -- admit()
+    # is called directly, mirroring how an adapter checks tool restriction before ever
+    # invoking the mock/real tool for that step.
+    mock = MockLLM([MockTurn(tool_calls=(MockToolCall(name="send_email"),))])
+
+    with pytest.raises(PolicyDenied) as info:
+        ledger.admit("run1", "0", policy, ToolCall(tool_name="send_email"))
+
+    assert info.value.decision.rule == "forbidden_tools"
+    assert mock.calls == 0
+
+
+def test_missing_usage_turn_does_not_zero_the_spend(
+    tmp_path: Path, policy_yaml: PolicyYaml
+) -> None:
+    policy = _policy(policy_yaml())
+    ledger = SQLiteBudgetLedger(tmp_path / "ledger.db")
+    mock = MockLLM([MockTurn(usage=Usage(None, None, "MISSING"))])
+    request = LlmCall("mock", input_tokens=10, max_output_tokens=5)
+
+    admission = ledger.admit("run1", "0", policy, request)
+    turn = mock.complete([])
+    ledger.reconcile(admission, turn.usage)
+
+    assert ledger.spent_today(policy.policy_id, admission.utc_date) == admission.estimated_cost
+    assert ledger.run_usage("run1").missing_usage == 1

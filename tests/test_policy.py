@@ -30,6 +30,8 @@ ALL_FIELDS = (
     "version",
     "max_tokens_per_run",
     "max_cost_per_day",
+    "max_steps",
+    "model_prices",
     "allowed_tools",
     "forbidden_tools",
     "required_approval_nodes",
@@ -159,6 +161,8 @@ policy_id: alpha
 version: 1
 max_tokens_per_run: 100
 max_cost_per_day: 25.00
+max_steps: 5
+model_prices: {mock: {input_per_mtok: 1, output_per_mtok: 2}}
 allowed_tools: [search, summarize]
 forbidden_tools: [send_email]
 required_approval_nodes: [send]
@@ -166,7 +170,9 @@ compliance_tags: [soc2, gdpr]
 requires: [durable_approval]
 """
 
-# Same rules: different key order, list order, policy_id, version, and 25.0 vs 25.00.
+# Same rules: different key order, list order, policy_id, version, 25.0 vs 25.00, and
+# model_prices value format (1.00/2.0 vs 1/2) -- quantization must make the hash
+# format-independent exactly as it already does for max_cost_per_day.
 _HASH_B = """
 requires: [durable_approval]
 compliance_tags: [gdpr, soc2]
@@ -177,6 +183,8 @@ forbidden_tools: [send_email]
 policy_id: beta
 required_approval_nodes: [send]
 max_tokens_per_run: 100
+max_steps: 5
+model_prices: {mock: {output_per_mtok: 2.0, input_per_mtok: 1.00}}
 """
 
 
@@ -185,6 +193,9 @@ def _policy(text: str) -> Policy:
 
 
 def test_hash_is_content_addressed() -> None:
+    # Also serves as test_hash_stability_survives_the_schema_change (Pitfall 6): _HASH_A and
+    # _HASH_B now each carry max_steps and a differently-formatted model_prices, so this
+    # assertion fails the moment the schema change and fixture update diverge.
     a, b = policy_hash(_policy(_HASH_A)), policy_hash(_policy(_HASH_B))
     assert a == b
     assert len(a) == 64 and set(a) <= set("0123456789abcdef")
@@ -195,6 +206,8 @@ def test_hash_is_content_addressed() -> None:
     [
         ("max_tokens_per_run", 101, True),
         ("max_cost_per_day", "26", True),
+        ("max_steps", 6, True),
+        ("model_prices", {"mock": {"input_per_mtok": "2", "output_per_mtok": "2"}}, True),
         ("allowed_tools", ["search"], True),
         ("forbidden_tools", [], True),
         ("required_approval_nodes", [], True),
@@ -218,6 +231,8 @@ def test_hashed_key_set_is_pinned() -> None:
     assert set(payload) == {
         "max_tokens_per_run",
         "max_cost_per_day",
+        "max_steps",
+        "model_prices",
         "allowed_tools",
         "forbidden_tools",
         "required_approval_nodes",

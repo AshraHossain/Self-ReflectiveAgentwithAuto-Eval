@@ -14,6 +14,8 @@ _VALID_POLICY: dict[str, Any] = {
     "version": 1,
     "max_tokens_per_run": 100,
     "max_cost_per_day": 25,
+    "max_steps": 10,
+    "model_prices": {"mock": {"input_per_mtok": 1, "output_per_mtok": 2}},
     "allowed_tools": ["search", "summarize"],
     "forbidden_tools": ["send_email"],
     "required_approval_nodes": ["send"],

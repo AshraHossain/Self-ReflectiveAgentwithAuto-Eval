@@ -25,7 +25,7 @@ from eacp.errors import PolicyError
 MAX_POLICY_BYTES = 64 * 1024
 _TOO_BIG = f"policy document exceeds {MAX_POLICY_BYTES} bytes"
 
-_COST_EXP = Decimal("0.000001")
+COST_EXP = Decimal("0.000001")  # public: eacp.engine.cost_of quantizes to the same exponent
 
 
 class _StrictLoader(yaml.SafeLoader):  # type: ignore[misc]
@@ -66,6 +66,36 @@ def load_yaml_mapping(text: str) -> dict[str, Any]:
 
 _PolicyId = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")]
 
+# Widened from _PolicyId with ':' and '/' so names like "ollama/llama3.1" validate. A model
+# name is never resolved to code or a filesystem path, so this is a display/dict-key charset
+# constraint, not a security boundary.
+_ModelName = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")]
+
+
+def _quantize_cost(v: Decimal) -> Decimal:
+    # Quantize, never normalize: Decimal("100").normalize() serializes as "1E+2".
+    try:
+        return v.quantize(COST_EXP)
+    except InvalidOperation:
+        raise ValueError("cost is out of range") from None
+
+
+class ModelPrice(BaseModel):
+    """Per-model token pricing (OD-2): the price table `engine.cost_of` reads.
+
+    An unpriced model is a fail-closed deny in `engine.decide` -- never a silent zero cost.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    input_per_mtok: Annotated[Decimal, Field(ge=Decimal(0))]
+    output_per_mtok: Annotated[Decimal, Field(ge=Decimal(0))]
+
+    @field_validator("input_per_mtok", "output_per_mtok")
+    @classmethod
+    def _quantize(cls, v: Decimal) -> Decimal:
+        return _quantize_cost(v)
+
 
 class Policy(BaseModel):
     """A validated policy. Every field is required: absence never means unlimited (D-08/D-12).
@@ -80,6 +110,8 @@ class Policy(BaseModel):
     version: Annotated[StrictInt, Field(ge=1)]
     max_tokens_per_run: Annotated[StrictInt, Field(ge=1)]
     max_cost_per_day: Annotated[Decimal, Field(ge=Decimal(0))]
+    max_steps: Annotated[StrictInt, Field(ge=1)]
+    model_prices: dict[_ModelName, ModelPrice]
     # Ordered lists, never sets: a set serializes in hash-seed-dependent order (Finding 1).
     allowed_tools: list[str]
     forbidden_tools: list[str]
@@ -90,11 +122,7 @@ class Policy(BaseModel):
     @field_validator("max_cost_per_day")
     @classmethod
     def _quantize(cls, v: Decimal) -> Decimal:
-        # Quantize, never normalize: Decimal("100").normalize() serializes as "1E+2".
-        try:
-            return v.quantize(_COST_EXP)
-        except InvalidOperation:
-            raise ValueError("cost is out of range") from None
+        return _quantize_cost(v)
 
     @field_validator(
         "allowed_tools", "forbidden_tools", "required_approval_nodes", "compliance_tags", "requires"

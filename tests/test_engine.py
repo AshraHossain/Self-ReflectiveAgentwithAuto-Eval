@@ -53,7 +53,7 @@ def test_decide_returns_a_structured_decision(policy_yaml: PolicyYaml) -> None:
     for decision in (allowed_llm, denied_llm, allowed_tool, denied_tool):
         assert decision.outcome in ("allow", "deny")
         assert decision.rule is not None
-        assert decision.limit is not None or decision.limit == 0
+        assert decision.limit is not None
         assert decision.observed is not None
 
 

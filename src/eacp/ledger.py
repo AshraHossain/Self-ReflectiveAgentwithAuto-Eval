@@ -292,12 +292,16 @@ class SQLiteBudgetLedger:
 
     def reconcile(self, admission: Admission, usage: Usage) -> None:
         with self._tx() as c:
-            cur = c.execute(
-                "UPDATE reservations SET reconciled=1"
-                " WHERE run_id=? AND call_key=? AND reconciled=0",
+            # SELECT before the claiming UPDATE (reordered from the original UPDATE-then-SELECT):
+            # a tool-call-misuse rejection below must raise before any row is mutated, so the
+            # transaction rolls back with no partial state and a corrected retry can still
+            # succeed -- same principle as admit()'s pre-INSERT PolicyDenied raise.
+            row = c.execute(
+                "SELECT policy_id, utc_date, tokens, cost, reconciled, price_input_per_mtok,"
+                " price_output_per_mtok FROM reservations WHERE run_id=? AND call_key=?",
                 (admission.run_id, admission.call_key),
-            )
-            if cur.rowcount == 0:
+            ).fetchone()
+            if row is None or row["reconciled"]:
                 # Copies store.py's "a silent no-op on an unknown id is worse than a raise"
                 # convention (store.py line 233): an unknown call_key and an
                 # already-reconciled one are indistinguishable here, and both must raise.
@@ -305,13 +309,22 @@ class SQLiteBudgetLedger:
                     f"unknown or already-reconciled reservation"
                     f" (run_id={admission.run_id!r}, call_key={admission.call_key!r})"
                 )
+            if row["price_input_per_mtok"] is None and usage.usage_source != "MISSING":
+                # A tool-call reservation has no price (admit() never estimated any LLM
+                # usage for it -- see the comment there): reconciling it against real LLM
+                # usage is a caller bug (e.g. not special-casing ToolCall admissions), not
+                # something to silently accept. Raise with the same "loud, not silent"
+                # philosophy as the row==None/reconciled case above, instead of crashing
+                # on `Decimal(None)` with an opaque TypeError.
+                raise ValueError(
+                    "cannot reconcile a tool-call reservation with non-MISSING usage "
+                    f"(run_id={admission.run_id!r}, call_key={admission.call_key!r})"
+                )
 
-            row = c.execute(
-                "SELECT policy_id, utc_date, tokens, cost, price_input_per_mtok,"
-                " price_output_per_mtok FROM reservations WHERE run_id=? AND call_key=?",
+            c.execute(
+                "UPDATE reservations SET reconciled=1 WHERE run_id=? AND call_key=?",
                 (admission.run_id, admission.call_key),
-            ).fetchone()
-            assert row is not None  # the UPDATE above just matched exactly this row
+            )
 
             est_tokens = row["tokens"]
             est_cost = Decimal(row["cost"])

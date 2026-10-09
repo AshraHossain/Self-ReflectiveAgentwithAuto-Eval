@@ -8,7 +8,7 @@ import hashlib
 import json
 from collections import Counter
 from collections.abc import Hashable
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_CEILING, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -80,6 +80,21 @@ def _quantize_cost(v: Decimal) -> Decimal:
         raise ValueError("cost is out of range") from None
 
 
+def _quantize_price(v: Decimal) -> Decimal:
+    # ROUND_CEILING, never the default ROUND_HALF_EVEN: a genuinely positive per-token
+    # price below $0.0000005/Mtok would otherwise quantize to exactly 0.000000, after
+    # which engine.cost_of() silently returns $0 for that model at any token volume --
+    # a complete, silent bypass of max_cost_per_day (CR-01). Mirrors cost_of's own
+    # ROUND_CEILING reasoning. Unlike max_cost_per_day (a ceiling the user sets, which
+    # must never round UP into something more permissive), a price rounded up only
+    # ever makes the computed cost more conservative, never less -- the safe direction
+    # for a value multiplied into a budget check, not compared against one.
+    try:
+        return v.quantize(COST_EXP, rounding=ROUND_CEILING)
+    except InvalidOperation:
+        raise ValueError("price is out of range") from None
+
+
 class ModelPrice(BaseModel):
     """Per-model token pricing (OD-2): the price table `engine.cost_of` reads.
 
@@ -94,7 +109,7 @@ class ModelPrice(BaseModel):
     @field_validator("input_per_mtok", "output_per_mtok")
     @classmethod
     def _quantize(cls, v: Decimal) -> Decimal:
-        return _quantize_cost(v)
+        return _quantize_price(v)
 
 
 class Policy(BaseModel):

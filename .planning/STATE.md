@@ -5,10 +5,10 @@ current_phase: 03
 current_phase_name: Policy Engine, Budget Ledger & Mock LLM
 status: executing
 stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-10-09T22:14:46.391Z"
+last_updated: "2026-10-09T22:34:50.919Z"
 last_activity: 2026-10-06
-last_activity_desc: "Phase 03 Wave 1 (03-01) complete: policy schema extension + decide() engine"
-state_head: 9c0c5a457263b0a718b9cf24253602040e31ce15
+last_activity_desc: "Phase 03 Wave 2 (03-02) complete: SQLite budget ledger"
+state_head: 6bbf713698dfd785cbbdd288235e048309203548
 progress:
   total_phases: 10
   completed_phases: 2

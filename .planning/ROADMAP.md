@@ -85,11 +85,11 @@ Plans:
   3. The daily cost counter survives a process restart and continues accumulating correctly
   4. A mock LLM emits scripted tool calls and non-zero usage, exercised by an automated test with no API key present
 
-**Plans**: 3 plans
+**Plans**: 1/3 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Policy schema extension (max_steps, model_prices) + pure decide() engine (wave 1)
+- [x] 03-01-PLAN.md — Policy schema extension (max_steps, model_prices) + pure decide() engine (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
 | 2. Core Schema, Registry & Stores | 3/3 | Complete   | 2026-10-02 |
-| 3. Policy Engine, Budget Ledger & Mock LLM | 0/3 | Planned | - |
+| 3. Policy Engine, Budget Ledger & Mock LLM | 1/3 | In Progress|  |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |
 | 5. LangGraph Adapter & Tracer | 0/TBD | Not started | - |
 | 6. CrewAI Adapter | 0/TBD | Not started | - |

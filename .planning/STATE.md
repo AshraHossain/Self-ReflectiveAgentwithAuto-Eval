@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 02
-current_phase_name: Core Schema, Registry & Stores
+current_phase: 03
+current_phase_name: Policy Engine, Budget Ledger & Mock LLM
 status: executing
 stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-10-02T18:09:43.691Z"
-last_activity: 2026-10-02
-last_activity_desc: 02-03 workflow registry complete; Phase 02 execution complete
-state_head: 0eef798d0003a61acb2234358dbd573ee7ccc4de
+last_updated: "2026-10-09T22:14:46.391Z"
+last_activity: 2026-10-06
+last_activity_desc: "Phase 03 Wave 1 (03-01) complete: policy schema extension + decide() engine"
+state_head: 9c0c5a457263b0a718b9cf24253602040e31ce15
 progress:
   total_phases: 10
-  completed_phases: 1
-  total_plans: 6
+  completed_phases: 2
+  total_plans: 9
   completed_plans: 6
 milestone_name: milestone
 ---
@@ -24,15 +24,15 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-09-24)
 
 **Core value:** A single policy definition can govern a workflow regardless of which framework (LangGraph, CrewAI, or ag2) executes it — enforced for real, not just documented.
-**Current focus:** Phase 02 — Core Schema, Registry & Stores
+**Current focus:** Phase 03 — Policy Engine, Budget Ledger & Mock LLM
 
 ## Current Position
 
-Phase: 02 (Core Schema, Registry & Stores) — EXECUTING
+Phase: 03 (Policy Engine, Budget Ledger & Mock LLM) — EXECUTING
 Prior: Phase 1 — VERIFIED (execution 3/3, UAT 7/7, security 0 open)
-Plan: 3 of 3 (all plans executed)
-Status: Phase 02 execution complete — ready for /gsd-verify-work 2
-Last activity: 2026-10-02 — 02-03 workflow registry complete
+Plan: 1 of 3
+Status: Executing Phase 03
+Last activity: 2026-10-06 — Phase 03 execution started
 
 Progress: [█░░░░░░░░░] 10%
 

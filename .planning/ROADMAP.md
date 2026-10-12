@@ -13,7 +13,7 @@ EACP is built bottom-up: a stable, framework-free foundation (schema, policy eng
 
 - [x] **Phase 1: Stack Decision, Scaffold & Packaging** - Installable core with zero framework lock-in and pinned, reproducible extras (completed 2026-09-26)
 - [x] **Phase 2: Core Schema, Registry & Stores** - Policies and workflows are declared, validated, and stored consistently (completed 2026-10-02)
-- [ ] **Phase 3: Policy Engine, Budget Ledger & Mock LLM** - Enforcement logic proven correct with zero frameworks installed
+- [x] **Phase 3: Policy Engine, Budget Ledger & Mock LLM** - Enforcement logic proven correct with zero frameworks installed (completed 2026-10-11)
 - [ ] **Phase 4: Approval Service, Audit Log & CLI** - Human-in-the-loop gate and compliance audit trail, framework-independent
 - [ ] **Phase 5: LangGraph Adapter & Tracer** - First real framework integration with durable pause/resume
 - [ ] **Phase 6: CrewAI Adapter** - Second adapter; forces the capability-tier design via the hardest HITL case
@@ -85,7 +85,7 @@ Plans:
   3. The daily cost counter survives a process restart and continues accumulating correctly
   4. A mock LLM emits scripted tool calls and non-zero usage, exercised by an automated test with no API key present
 
-**Plans**: 3/3 plans executed
+**Plans**: 3/3 plans complete
 Plans:
 **Wave 1**
 
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Stack Decision, Scaffold & Packaging | 3/3 | Complete   | 2026-09-26 |
 | 2. Core Schema, Registry & Stores | 3/3 | Complete   | 2026-10-02 |
-| 3. Policy Engine, Budget Ledger & Mock LLM | 3/3 | In Progress|  |
+| 3. Policy Engine, Budget Ledger & Mock LLM | 3/3 | Complete    | 2026-10-11 |
 | 4. Approval Service, Audit Log & CLI | 0/TBD | Not started | - |
 | 5. LangGraph Adapter & Tracer | 0/TBD | Not started | - |
 | 6. CrewAI Adapter | 0/TBD | Not started | - |

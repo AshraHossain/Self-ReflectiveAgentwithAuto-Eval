@@ -15,7 +15,7 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 - [x] **POLICY-01**: Policy defined declaratively in YAML with a fixed field schema (no custom DSL), loaded via `yaml.safe_load` only
 - [x] **POLICY-02**: Policy schema includes max_tokens_per_run, max_cost_per_day, allowed_tools, forbidden_tools, required_approval_nodes, compliance_tags
-- [ ] **POLICY-03**: Policy engine (`decide()`) is pure — no I/O, no clock, no framework imports — and returns a structured `Decision` object (policy id, version, rule, limit, observed value), never a bare boolean
+- [x] **POLICY-03**: Policy engine (`decide()`) is pure — no I/O, no clock, no framework imports — and returns a structured `Decision` object (policy id, version, rule, limit, observed value), never a bare boolean
 - [ ] **POLICY-04**: Every policy is content-hashed; the hash is pinned to every run record and every audit log entry for reproducibility
 
 ### WORKFLOW — Workflow Schema & Registry
@@ -26,11 +26,11 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 
 ### BUDGET — Cost & Rate-Limit Enforcement
 
-- [ ] **BUDGET-01**: Token/cost budget is enforced via pre-call admission (estimate before the call, hard block if it would exceed the limit) — not just checked after the fact
-- [ ] **BUDGET-02**: Post-call reconciliation updates actual usage against the pre-call estimate
-- [ ] **BUDGET-03**: Daily cost counter is persisted (survives process restart), keyed by policy + UTC date
-- [ ] **BUDGET-04**: An independent `max_steps` ceiling bounds runaway loops regardless of token accounting
-- [ ] **BUDGET-05**: Every usage reading carries a `usage_source` tag (`provider`|`estimated`|`MISSING`) — usage is never silently coerced to zero
+- [x] **BUDGET-01**: Token/cost budget is enforced via pre-call admission (estimate before the call, hard block if it would exceed the limit) — not just checked after the fact
+- [x] **BUDGET-02**: Post-call reconciliation updates actual usage against the pre-call estimate
+- [x] **BUDGET-03**: Daily cost counter is persisted (survives process restart), keyed by policy + UTC date
+- [x] **BUDGET-04**: An independent `max_steps` ceiling bounds runaway loops regardless of token accounting
+- [x] **BUDGET-05**: Every usage reading carries a `usage_source` tag (`provider`|`estimated`|`MISSING`) — usage is never silently coerced to zero
 
 ### TOOLS — Tool Restriction
 
@@ -132,12 +132,12 @@ Source: `.planning/PROJECT.md` (project context) + `.planning/research/SUMMARY.m
 | WORKFLOW-02 | Phase 2 | Complete |
 | WORKFLOW-03 | Phase 2 | Complete |
 | TRACE-03 | Phase 2 | Complete |
-| POLICY-03 | Phase 3 | Pending |
-| BUDGET-01 | Phase 3 | Pending |
-| BUDGET-02 | Phase 3 | Pending |
-| BUDGET-03 | Phase 3 | Pending |
-| BUDGET-04 | Phase 3 | Pending |
-| BUDGET-05 | Phase 3 | Pending |
+| POLICY-03 | Phase 3 | Complete |
+| BUDGET-01 | Phase 3 | Complete |
+| BUDGET-02 | Phase 3 | Complete |
+| BUDGET-03 | Phase 3 | Complete |
+| BUDGET-04 | Phase 3 | Complete |
+| BUDGET-05 | Phase 3 | Complete |
 | AUDIT-01 | Phase 4 | Pending |
 | AUDIT-02 | Phase 4 | Pending |
 | APPROVAL-01 | Phase 4 | Pending |
